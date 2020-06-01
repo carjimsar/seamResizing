@@ -1,18 +1,10 @@
 function data_carved = carve_seam(seam, data)
-% Carve one vertical seam from MxNx3 matrix of double values or MxN matrix
-% of logical values
+% Elimina una costura de una matriz MxNx3, tipica de una imagen RGB
 %
-% Input:
-%   seam [Mx1] seam(i) = j iff the elements (i,j,1:3) (in case of MxNx3
-%     input data matrix) or the element (i,j) (in case of MxN input) should
-%     be carved out from the data matrix
-%   data [MxNx3 (double) or MxN (logical)] data matrix from which the seam
-%     should be carved
+% Recibe la matriz en data y el seam, que es una columa de pares que representan
+% las coordenadas de los pixeles a extraer
 %
-% Output:
-%   data_carved [Mx(N-1)x3 (double) or Mx(N-1) (logical)] data matrix
-%     having one vertical seam carved out; the data type of the matrix
-%     should correspond to the type of the input matrix
+% Devuelve una matriz del mismo tipo, con una columna menos
 
 [h, w, c] = size(data);
 
@@ -23,7 +15,6 @@ else
 end
 
 
-% add your code here
 for i=1:h
     mientras=data(i,:,:);
     mientras(:,seam(i),:)=[];

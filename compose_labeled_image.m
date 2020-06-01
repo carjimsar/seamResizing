@@ -1,9 +1,8 @@
 function img = compose_labeled_image(img, lab, img_weight)
-% Compose labeled RGB image from the specified grayscale or RGB image and
-% the specified labeling using default label colors. Weight of the image
-% for composition can be specified optionally.
 
-% weight of the image for composition
+% Forma la imagen RGB etiquetada partiendo de una imagen, ya sea en escala de grises o RGB,
+% usando los valores de etiqueta para colores por defecto. El peo de la imagen para la composicion
+% es un valor opcional
 if ~exist('img_weight', 'var')
 	img_weight = 0.4;
 end
@@ -22,7 +21,7 @@ num_labs = max(lab(:));
 colors = get_label_colors();
 num_colors = size(colors, 1);
 
-% blend RGB values with labeling
+% Asigna por pares las etiquetas a los valores RGB
 for i = 1:min(num_colors, num_labs)
 	idx_i = (lab == i);
 	num_i = sum(idx_i(:));

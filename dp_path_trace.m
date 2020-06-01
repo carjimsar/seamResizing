@@ -5,13 +5,13 @@ function path = dp_path_trace(path_cost, path_idx)
 % la última fila.
 %
 % Entrada:
-%	path_cost es el coste total del camino más corto definido anteriormente
+%	path_cost es el coste total del camino más corto definido 
 %
 %   path_idx es el índice columna del vertice anterior a aquel con el que 
-%   se esta trabajando  en el camino más corte definido anteriormente.
+%   se esta trabajando  en el camino más corte definido 
 %
 % Salida:
-%   path(i) = j en el caso de que el camino mas corto desde la primera columna
+%   path (i) = j en el caso de que el camino mas corto desde la primera columna
 %   hasta la ultima pasa por el vertice (i,j)
 
 [M,~]=size(path_cost);

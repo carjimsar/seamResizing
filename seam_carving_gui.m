@@ -6,10 +6,6 @@ img = double(imread(strcat(ruta,archivo))) / 255;
 [img_h, img_w, ~] = size(img);
 
 hfig = figure;
-% set(hfig, ...
-% 	'Units', 'normalized', ...
-% 	'name', sprintf('Image file: %s', imagen));
-
 
 mask_delete = false(img_h, img_w);
 mask_protect = false(img_h, img_w);
@@ -82,16 +78,23 @@ end
 
 function resize(hobj, ~)
 
+% Funcion para redimensionar la imagen a las medidas
+% indicadas. Es una modificacion de la funcion carve,
+% que calculas las vetas a eliminar para conseguir la 
+% la resolucion final. Ignora la configuracion de orientacion,
+% ya que reduce por cada una segun sea necesario
+
+
 hfig = ancestor(hobj, 'figure');
 img = getappdata(hfig, 'img');
 
 [img_h, img_w, ~] = size(img);
 
-% mask defined by the user
+% Mascara definida por el usuario
 mask_delete = getappdata(hfig, 'mask_delete');
 mask_protect = getappdata(hfig, 'mask_protect');
 
-% properties of the method
+% Recupera la configuracion necesaria desde la interfaz de usuario
 hcost = getappdata(hfig, 'hcost');
 cost_method_str = get(hcost, 'String');
 cost_method = cost_method_str{get(hcost, 'Value')};
@@ -102,110 +105,104 @@ num_seams_h = img_h - str2double(get(newheight, 'String'));
 newidth = getappdata(hfig, 'newidth');
 num_seams_w = img_w - str2double(get(newidth, 'String'));
 
-% carve seams from the image
-[img_media, seamsh] = seam_carving(img, 'Horizontal', num_seams_h, ...
-	cost_method, mask_delete, mask_protect);
+%Solo podemos redimensionar si se han indicado medidas validas
+if ((newheight > 0) && (newidth > 0))
 
-%COMIENZA
+	[img_media, seamsh] = seam_carving(img, 'Horizontal', num_seams_h, ...
+		cost_method, mask_delete, mask_protect);
 
-[img_h, img_w, ~] = size(img_media);
+	[img_h, img_w, ~] = size(img_media);
 
-% mask defined by the user
-mask_delete = false(img_h, img_w);
-mask_protect = false(img_h, img_w);
+	
 
+	mask_delete = false(img_h, img_w);
+	mask_protect = false(img_h, img_w);
 
-
-% carve seams from the image
-[img_carve, seamsv] = seam_carving(img_media, 'Vertical', num_seams_w, ...
-	cost_method, mask_delete, mask_protect);
-
-%ACABA
-
-figure;
-imagesc(img_carve);
-axis image off;
-title('Carved image');
-
-% visualize carved seams
-%img_seams_media = draw_seams(img, seamsh, 'Horizontal');
-%img_seams = draw_seams(img_seams_media, seamsv, 'Vertical');
+	% Elimina las costuras
+	[img_carve, seamsv] = seam_carving(img_media, 'Vertical', num_seams_w, ...
+		cost_method, mask_delete, mask_protect);
 
 
-figure;
-imagesc(img_seams);
-axis image off;
-title('Seams projected to the original image');
+	figure;
+	imagesc(img_carve);
+	axis image off;
+	title('Carved image');
 
 
+	figure;
+	imagesc(img_seams);
+	axis image off;
+	title('Seams projected to the original image');
+
+end
 
 end
 
 function define_mask(hobj, ~, mask_name)
 
-hfig = ancestor(hobj, 'figure');%vuelve atras la parte visible
-img = getappdata(hfig, 'img');%cargamos la imagen
-haxes = getappdata(hfig, 'haxes');%cargamos el poligono
+hfig = ancestor(hobj, 'figure');
+img = getappdata(hfig, 'img');
+haxes = getappdata(hfig, 'haxes');
 
-% dejar que el usuario especifique las coordenadas del polígono delimitador
+% Permite configurar los limites del poligono que forma la mascara
 [x, y] = getline(haxes);
 
-% convertir el polígono en una máscara binaria
-mask = roipoly(img, x, y);%especifica los vértices poligonales como 
-%coordenadas X-Y y en el sistema de coordenadas espaciales predeterminado.xiyi
-mask = logical(mask);%convierte en una matriz de valores lógicos
+% Convierte el poligono a una mascara binaria para su aplicacion
+mask = roipoly(img, x, y);
+mask = logical(mask);
 
-setappdata(hfig, mask_name, mask);%almacena el resultanto con su nombre
-redraw_image(hfig);%
+setappdata(hfig, mask_name, mask);
+redraw_image(hfig);
 
 end
 
 
 function clear_mask(hobj, ~, mask_name)
 
-hfig = ancestor(hobj, 'figure');%vuelve atras la parte visible
-mask = getappdata(hfig, mask_name); %rescatamos los valores
+hfig = ancestor(hobj, 'figure');
+mask = getappdata(hfig, mask_name); 
 
+% Reinicia la mascara estableciendola a 0 al completo
+mask = false(size(mask));
 
-mask = false(size(mask));% Limpiamos la mascara
-
-setappdata(hfig, mask_name, mask);%la volvemos a cargar
+setappdata(hfig, mask_name, mask);
 redraw_image(hfig);
 
 end
 
 
 function carve(hobj, ~)
+% Funcion encargada de la eliminacion de vetas
 
-hfig = ancestor(hobj, 'figure');%vuelve atras la parte visible
-img = getappdata(hfig, 'img');%cargamos la imagen
+hfig = ancestor(hobj, 'figure');
+img = getappdata(hfig, 'img');
 
-% mask defined by the user
-mask_delete = getappdata(hfig, 'mask_delete');%cargamos mascara a borrar
-mask_protect = getappdata(hfig, 'mask_protect');%cargamos mascara a proteger
+% Mascaras definidas por el usuario en la interfaz
+mask_delete = getappdata(hfig, 'mask_delete');
+mask_protect = getappdata(hfig, 'mask_protect');
 
-% properties of the method
-hcost = getappdata(hfig, 'hcost');%cargamos el coste
+% Recupera la configuracion necesaria desde la interfaz de usuario
+hcost = getappdata(hfig, 'hcost');
 cost_method_str = get(hcost, 'String');
 cost_method = cost_method_str{get(hcost, 'Value')};
 hdir = getappdata(hfig, 'hdir');
-direction_str = get(hdir, 'String');%cargamos direccion
+direction_str = get(hdir, 'String');
 direction = direction_str{get(hdir, 'Value')};
-hseams = getappdata(hfig, 'hseams');%cargamos costuras
+hseams = getappdata(hfig, 'hseams');
 num_seams = str2double(get(hseams, 'String'));
 
-% hacemos el metodo
+
 [img_carve, seams] = seam_carving(img, direction, num_seams, ...
 	cost_method, mask_delete, mask_protect);
 
 
 
 figure;
-imagesc(img_carve);%una imagen que utiliza el rango completo de colores
+imagesc(img_carve);
 axis image off;
 title('Carved image');
 
-% visualize carved seams
+% Funcion encargada de la superposicion de las vetas
 img_seams = draw_seams(img, seams, direction);
 
 figure;
@@ -223,11 +220,11 @@ mask_delete = getappdata(hfig, 'mask_delete');
 mask_protect = getappdata(hfig, 'mask_protect');
 haxes = getappdata(hfig, 'haxes');
 
-% dibujamos ambas mascaras
+% Superpone la mascara a la imagen original
 img = draw_mask(img, mask_delete, [1 0 0], 0.5);
 img = draw_mask(img, mask_protect, [0 0 1], 0.5);
 
-% enseñamos la imagewn modificada
+% Muestra la imagen por pantalla
 imagesc(img, 'parent', haxes);
 
 end
@@ -235,7 +232,7 @@ end
 
 function control = create_ui_control(style, pos, text, callback)
 
-% valores de ancho y alto del elemento de control
+% Ancho y alto para la colocacion en la interfaz grafica
 CW = 0.25;
 CH = 0.06;
 MARG = 0.01;
