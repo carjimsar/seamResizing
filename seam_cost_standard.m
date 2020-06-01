@@ -1,22 +1,12 @@
 function vertex_cost = seam_cost_standard(img, mask_delete, mask_protect)
-% Calcular los costos de los vértices para la tarea de tallar las costuras.
-% Los costos de los vértices para los píxeles individuales se basan en el 
-% gradiente estimado de la imagen.
-%
-% Entrada:
-%    img [MxNx3 (doble)] entrada RGB mask_delete [MxN (lógico)] pixeles de 
-%    especulación de matriz para los cuales el costo del vértice debe ser lo 
-%    suficientemente bajo para asegurar su prioridad de tallado mask_protector 
-%    [MxN (lógico)] pixeles de especulación de matriz para los cuales el 
-%    costo del vértice debe ser lo suficientemente bajo para asegurar su 
-%    prioridad de tallado
-%
-% Salida:
-%    costo_vértice [MxN (doble)] costo del vértice para los píxeles 
-%    individuales basado en el gradiente estimado de la imagen y las máscaras
-%    binarias que especifican los píxeles a ser eliminados y protegidos
+% Calcula el coste de las vetas para su extraccion.
+% El coste de los vertices esta basado en la estimacion del gradiente de la imagen
 
-% estimar los derivados parciales y calcular el coste_vértice
+% Recibe una imagen RGB, y dos mascaras binarias: una de proteccion y otra de eliminacion.
+% Se aplican para establecer los costes de los pixeles indicados de forma que siempre o nunca sean
+% escogidos para ser eliminados
+
+% Devuelve una matriz con el coste de cada vertice.
 
 
 

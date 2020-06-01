@@ -91,8 +91,8 @@ img = getappdata(hfig, 'img');
 [img_h, img_w, ~] = size(img);
 
 % Mascara definida por el usuario
-mask_delete = getappdata(hfig, 'mask_delete');
-mask_protect = getappdata(hfig, 'mask_protect');
+mask_delete = false(img_h, img_w);
+mask_protect = false(img_h, img_w);
 
 % Recupera la configuracion necesaria desde la interfaz de usuario
 hcost = getappdata(hfig, 'hcost');
@@ -114,7 +114,6 @@ if ((newheight > 0) && (newidth > 0))
 	[img_h, img_w, ~] = size(img_media);
 
 	
-
 	mask_delete = false(img_h, img_w);
 	mask_protect = false(img_h, img_w);
 
