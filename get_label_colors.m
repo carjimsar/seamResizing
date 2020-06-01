@@ -1,5 +1,5 @@
 function colors = get_label_colors()
-% Get distinct colors to visualize individual pixel labels.
+% Colores para etiquetar de forma clara cada píxel.
 
 colors = [
 	1 0 0;  % red

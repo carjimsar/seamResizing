@@ -1,11 +1,14 @@
 function labeling = load_pixel_labeling(img_path, color_1, color_2, ...
 	color_3, color_4)
-% Load labeling of pixels from the given image. The optional arguments
-% specify RGB colors of individual labels. The pixels having color 1 will
-% be assigned label 1, pixels having color 2 will be assigned lanel 2 etc.
 
-% default colors are red for label 1, blue for label 2, green for label 3
-% and yellow for label 4
+
+% Carga el etiquetado de los pixeles de la imagen dada. Los argumentos
+% son opcionales, y en caso de que estén indica que colores usar para las etiquetas
+% En caso contrario, se usan los predefinidos. 
+
+
+
+% Los colores por defecto son: rojo 1, azul 2, verde 3 y amarillo 4
 if ~exist('color_1', 'var')
 	color_1 = [255 0 0];
 end
