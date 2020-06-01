@@ -1,6 +1,7 @@
 function img = draw_pixels(img, pix_ind, color)
-% Fill image pixels specified by their 1D index with the specified color.
-% The function processes all channels of the image.
+
+% Asigna a los pixeles un color segun lo que se haya especificado en su indice.
+% La funcion trabaja con todos los colores de la imagen
 
 [h, w, c] = size(img);
 

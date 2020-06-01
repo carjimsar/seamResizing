@@ -128,8 +128,8 @@ axis image off;
 title('Carved image');
 
 % visualize carved seams
-img_seams_media = draw_seams(img, seamsh, 'Horizontal');
-img_seams = draw_seams(img_seams_media, seamsv, 'Vertical');
+%img_seams_media = draw_seams(img, seamsh, 'Horizontal');
+%img_seams = draw_seams(img_seams_media, seamsv, 'Vertical');
 
 
 figure;
