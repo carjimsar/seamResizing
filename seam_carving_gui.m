@@ -1,52 +1,58 @@
+function seam_carving_gui()
 
-function seam_carving_gui(imagen)
+[archivo,ruta] = uigetfile('*.jpg');
+
+img = double(imread(strcat(ruta,archivo))) / 255;
+[img_h, img_w, ~] = size(img);
 
 hfig = figure;
-set(hfig, ...
-	'Units', 'normalized', ...
-	'name', sprintf('Image file: %s', imagen));
-
-img = double(imread(imagen)) / 255;
-[img_h, img_w, ~] = size(img);
+% set(hfig, ...
+% 	'Units', 'normalized', ...
+% 	'name', sprintf('Image file: %s', imagen));
 
 
 mask_delete = false(img_h, img_w);
 mask_protect = false(img_h, img_w);
 
 
-create_ui_control('pushbutton', 1, 'Define zona a borrar', ...
+create_ui_control('text', [1 0 0.4],"Alto: ");
+create_ui_control('text', [1 0.4 0.4],img_h);
+create_ui_control('text', [2 0 0.4],"Ancho :");
+create_ui_control('text', [2 0.4 0.4],img_w);
+
+create_ui_control('pushbutton', 3, 'Define zona a borrar', ...
 	{@define_mask, 'mask_delete'});
 
-create_ui_control('pushbutton', 2, 'Limpiar zona a borrar', ...
+create_ui_control('pushbutton', 4, 'Limpiar zona a borrar', ...
 	{@clear_mask, 'mask_delete'});
 
-create_ui_control('pushbutton', 3, 'Define zona a proteger', ...
+create_ui_control('pushbutton', 5, 'Define zona a proteger', ...
 	{@define_mask, 'mask_protect'});
 
-create_ui_control('pushbutton', 4, 'Limpiar zona a proteger', ...
+create_ui_control('pushbutton', 6, 'Limpiar zona a proteger', ...
 	{@clear_mask, 'mask_protect'});
 
-create_ui_control('text', [5 0 0.4], 'Coste');
+create_ui_control('text', [7 0 0.4], 'Coste');
 
-hcost = create_ui_control('popupmenu', [5 0.4 0.6], ...
+hcost = create_ui_control('popupmenu', [7 0.4 0.6], ...
 	{'Standard', 'Forward'});
 
-create_ui_control('text', [6 0 0.4], 'Direction:');
-hdir = create_ui_control('popupmenu', [6 0.4 0.6], ...
+create_ui_control('text', [8 0 0.4], 'Direction:');
+hdir = create_ui_control('popupmenu', [8 0.4 0.6], ...
 	{'Vertical', 'Horizontal'});
 
-create_ui_control('text', [7 0 0.4], 'Seams:');
-hseams = create_ui_control('edit', [7 0.4 0.6], 0);
+create_ui_control('text', [9 0 0.4], 'Seams:');
+hseams = create_ui_control('edit', [9 0.4 0.6], 0);
 
-create_ui_control('pushbutton', 8, 'Carve', @carve);
+create_ui_control('pushbutton', 10, 'Carve', @carve);
 
-create_ui_control('text', [9 0 0.4], 'Alto:');
-newheight = create_ui_control('edit', [9 0.4 0.6], 0);
+create_ui_control('text', [11 0 0.4], 'Alto:');
+newheight = create_ui_control('edit', [11 0.4 0.6], 0);
 
-create_ui_control('text', [10 0 0.4], 'Ancho:');
-newidth = create_ui_control('edit', [10 0.4 0.6], 0);
+create_ui_control('text', [12 0 0.4], 'Ancho:');
+newidth = create_ui_control('edit', [12 0.4 0.6], 0);
 
-create_ui_control('pushbutton', 11, 'Redimensionar', @resize);
+create_ui_control('pushbutton', 13, 'Redimensionar', @resize);
 
 haxes = axes(...
 	'Units', 'normalized', ...
