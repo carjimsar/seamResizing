@@ -1,31 +1,31 @@
 function [vertex_cost, topleft_cost, top_cost, topright_cost] = ...
     seam_cost_forward(img, mask_delete, mask_protect)
-% Calcular los costos de los vÈrtices para la tarea de tallado de costuras. 
-% Los costos de los bordes se basan en los pÌxeles potencialmente tallados. 
-% Los costos de los vÈrtices aseguran la eliminaciÛn o protecciÛn de los 
-% pÌxeles deseados.
+% Calcular los costos de los v√©rtices para la tarea de tallado de costuras. 
+% Los costos de los bordes se basan en los p√≠xeles potencialmente tallados. 
+% Los costos de los v√©rtices aseguran la eliminaci√≥n o protecci√≥n de los 
+% p√≠xeles deseados.
 %
 % Entrada:
 %    img [MxNx3 (double)] imagen RGB de entrada mask_delete [MxN (logical)] 
-%    pÌxeles de especulaciÛn de la matriz para los cuales el costo del vÈrtice
+%    p√≠xeles de especulaci√≥n de la matriz para los cuales el costo del v√©rtice
 %    debe ser lo suficientemente bajo como para asegurar su prioridad de 
-%    tallado mask_protect [MxN (lÛgico)] pÌxeles de especulaciÛn de la matriz
-%    para los cuales el costo del vÈrtice debe ser lo suficientemente bajo 
+%    tallado mask_protect [MxN (l√≥gico)] p√≠xeles de especulaci√≥n de la matriz
+%    para los cuales el costo del v√©rtice debe ser lo suficientemente bajo 
 %    como para asegurar su prioridad de tallado
 
 
 %
 %  Salida:
-%    costo_vertical [MxN (doble)] costos de vÈrtices para pÌxeles individuales 
-%    basados en las m·scaras de supresiÛn y protecciÛn costo_vertical [MxN 
+%    costo_vertical [MxN (doble)] costos de v√©rtices para p√≠xeles individuales 
+%    basados en las m√°scaras de supresi√≥n y protecci√≥n costo_vertical [MxN 
 %    (double)]    costos de los bordes superiores izquierdos costo_vertical 
 %    [MxN (double)] costos de los bordes superiores derechos
 
 [M, N, ~] = size(img);
 
-% agregar cÛdigo para computar topleft_cost, top_cost y topright_cost
+% agregar c√≥digo para computar topleft_cost, top_cost y topright_cost
 
-% El coste_de_vÈrtice por defecto es cero
+% El coste_de_v√©rtice por defecto es cero
 vertex_cost = zeros(M, N);
 topleft_cost = zeros(M, N);
 top_cost = zeros(M, N);
@@ -49,25 +49,23 @@ top_cost(:,N)=Inf;
 topright_cost(:,1)=Inf;
 
 if exist('mask_delete', 'var')
-    % modificar el coste_vÈrtice de los pÌxeles que deben ser eliminados
-    for i=1:M
-        for j=1:N
-            if(mask_delete(i,j)==1)
-                vertex_cost(i,j)=-2*sqrt(3)*(M-1);
-            end
-        end
-    end
+ % modificar el coste_v√©rtice de los p√≠xeles que deben ser eliminados
+    newValues = (-2*sqrt(3)* (M-1)) * mask_delete;
+    opositeMask = mask_delete < 1;
+    vertexWithoutMask = opositeMask .* vertex_cost;
+    vertex_cost = vertexWithoutMask + newValues;
+   
+
 end
 
 if exist('mask_protect', 'var')
-    % modificar el coste_vÈrtice de los pÌxeles protegidos
-    for i=1:M
-        for j=1:N
-            if(mask_protect(i,j)==1)
-                vertex_cost(i,j)=2*sqrt(3)*(M-1);
-            end
-        end
-    end
+% modificar el coste_v√©rtice de los p√≠xeles protegidos
+    newValues = (2*sqrt(3)* (M-1)) * mask_protect;
+    opositeMask = mask_protect < 1;
+    vertexWithoutMask = opositeMask .* vertex_cost;
+    vertex_cost = vertexWithoutMask + newValues;
+    
+
 end
 
 end
