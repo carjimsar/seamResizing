@@ -111,12 +111,12 @@ num_seams_w = img_w - str2double(get(newidth, 'String'));
 [img_media, seamsh, mask_delete, mask_protect] = seam_carving(img, 'Horizontal', num_seams_h, ...
     cost_method, mask_delete, mask_protect);
 
-mask_delete = mask_delete';
-mask_protect = mask_protect';
+mask_delete1 = mask_delete';
+mask_protect1 = mask_protect';
 
 % Elimina las costuras
 [img_carve, seamsv, ~, ~] = seam_carving(img_media, 'Vertical', num_seams_w, ...
-    cost_method, mask_delete, mask_protect);
+    cost_method, mask_delete1, mask_protect1);
 
  img_seamsh = draw_seams(img, seamsh, 'Horizontal');
  img_seamsv = draw_seams(img_media, seamsv, 'Vertical');
