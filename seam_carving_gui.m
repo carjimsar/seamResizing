@@ -108,21 +108,18 @@ num_seams_w = img_w - str2double(get(newidth, 'String'));
 %Solo podemos redimensionar si se han indicado medidas validas
 
 
-[img_media, seamsh] = seam_carving(img, 'Horizontal', num_seams_h, ...
+[img_media, seamsh, mask_delete, mask_protect] = seam_carving(img, 'Horizontal', num_seams_h, ...
     cost_method, mask_delete, mask_protect);
 
-[img_h, img_w, ~] = size(img_media);
-
-
-mask_delete = false(img_h, img_w);
-mask_protect = false(img_h, img_w);
+mask_delete = mask_delete';
+mask_protect = mask_protect';
 
 % Elimina las costuras
-[img_carve, seamsv] = seam_carving(img_media, 'Vertical', num_seams_w, ...
+[img_carve, seamsv, ~, ~] = seam_carving(img_media, 'Vertical', num_seams_w, ...
     cost_method, mask_delete, mask_protect);
 
-% img_seamsh = draw_seams(img, seamsh, direction);
-% img_seamsv = draw_seams(img, seamsv, direction);
+ img_seamsh = draw_seams(img, seamsh, 'Horizontal');
+ img_seamsv = draw_seams(img_media, seamsv, 'Vertical');
 
 figure;
 imagesc(img_carve);
@@ -130,15 +127,15 @@ axis image off;
 title('Carved image');
 
 
-% figure;
-% imagesc(img_seamsh);
-% axis image off;
-% title('Seams projected to the original image');
-% 
-% figure;
-% imagesc(img_seamsv);
-% axis image off;
-% title('Seams projected to the original image');
+figure;
+imagesc(img_seamsh);
+axis image off;
+title('Horizontal seams projected to the original image');
+
+figure;
+imagesc(img_seamsv);
+axis image off;
+title('Vertical seams projected to the original image');
 
 
 
@@ -198,7 +195,7 @@ hseams = getappdata(hfig, 'hseams');
 num_seams = str2double(get(hseams, 'String'));
 
 
-[img_carve, seams] = seam_carving(img, direction, num_seams, ...
+[img_carve, seams, ~, ~] = seam_carving(img, direction, num_seams, ...
 	cost_method, mask_delete, mask_protect);
 
 
