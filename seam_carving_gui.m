@@ -103,14 +103,20 @@ cost_method_str = get(hcost, 'String');
 cost_method = cost_method_str{get(hcost, 'Value')};
 
 newheight = getappdata(hfig, 'newheight');
-num_seams_h = img_h - str2double(get(newheight, 'String'));
+newheight = str2double(get(newheight, 'String'));
+num_seams_h = img_h - newheight;
 
 newidth = getappdata(hfig, 'newidth');
-num_seams_w = img_w - str2double(get(newidth, 'String'));
+newidth = str2double(get(newidth, 'String'));
+num_seams_w = img_w - newidth;
 
+if((newheight == 0 || newidth == 0) || (newheight == img_h && newidth == img_w) || (newheight > img_h || newidth > img_w))
 %Solo podemos redimensionar si se han indicado medidas validas
 
+    msgbox('Las nuevas medidas deben ser mayor que 0 y al menos una menor que las originales','Error');
 
+else
+    
 [img_media, seamsh, mask_delete, mask_protect] = seam_carving(img, 'Horizontal', num_seams_h, ...
     cost_method, mask_delete, mask_protect);
 
@@ -142,6 +148,8 @@ title('Vertical seams projected to the original image');
 
 
 
+
+end
 end
 
 function define_mask(hobj, ~, mask_name)
