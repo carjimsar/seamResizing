@@ -197,25 +197,28 @@ direction = direction_str{get(hdir, 'Value')};
 hseams = getappdata(hfig, 'hseams');
 num_seams = str2double(get(hseams, 'String'));
 
+if ( ~any(mask_delete(:)) && num_seams < 1  )
 
-[img_carve, seams, ~, ~] = seam_carving(img, direction, num_seams, ...
-	cost_method, mask_delete, mask_protect);
+    msgbox('Para reducir la imagen, es necesario indicar cuantas vetas extraer y/o establecer una mascara de eliminacion.','Error');
 
+else
+    [img_carve, seams, ~, ~] = seam_carving(img, direction, num_seams, ...
+        cost_method, mask_delete, mask_protect);
 
+    figure;
+    imagesc(img_carve);
+    axis image off;
+    title('Carved image');
 
-figure;
-imagesc(img_carve);
-axis image off;
-title('Carved image');
+    % Funcion encargada de la superposicion de las vetas
+    img_seams = draw_seams(img, seams, direction);
 
-% Funcion encargada de la superposicion de las vetas
-img_seams = draw_seams(img, seams, direction);
-
-figure;
-imagesc(img_seams);
-axis image off;
-title('Seams projected to the original image');
-
+    figure;
+    imagesc(img_seams);
+    axis image off;
+    title('Seams projected to the original image');
+    
+end
 end
 
 
