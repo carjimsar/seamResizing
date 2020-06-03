@@ -1,5 +1,7 @@
 function seam_carving_gui()
 
+waitfor(msgbox('Seleccione la imagen con la que quiere trabajar','Bienvenido'));
+
 [archivo,ruta] = uigetfile(...    
     {'*.jpg; *.JPG; *.jpeg; *.JPEG; *.img; *.IMG; *.tif; *.TIF; *.tiff; *.TIFF; *.png; *.PNG','Supported Files'},...    
     'MultiSelect', 'on');
@@ -52,6 +54,8 @@ newidth = create_ui_control('edit', [12 0.4 0.6], 0);
 
 create_ui_control('pushbutton', 13, 'Redimensionar', @resize);
 
+guardar = create_ui_control('checkbox', [14 0 1], 'Guardar resultado a archivo');
+
 haxes = axes(...
 	'Units', 'normalized', ...
 	'Box', 'on', ...
@@ -73,6 +77,7 @@ setappdata(hfig, 'haxes', haxes);
 setappdata(hfig, 'hcost', hcost);
 setappdata(hfig, 'hdir', hdir);
 setappdata(hfig, 'hseams', hseams);
+setappdata(hfig, 'guardar', guardar);
 setappdata(hfig, 'newheight', newheight);
 setappdata(hfig, 'newidth', newidth);
 
@@ -92,9 +97,6 @@ img = getappdata(hfig, 'img');
 
 [img_h, img_w, ~] = size(img);
 
-% Mascara definida por el usuario
-% mask_delete = false(img_h, img_w);
-% mask_protect = false(img_h, img_w);
 
 mask_delete = getappdata(hfig, 'mask_delete');
 mask_protect = getappdata(hfig, 'mask_protect');
@@ -104,6 +106,10 @@ hcost = getappdata(hfig, 'hcost');
 cost_method_str = get(hcost, 'String');
 cost_method = cost_method_str{get(hcost, 'Value')};
 
+hdir = getappdata(hfig, 'hdir');
+direction_str = get(hdir, 'String');
+direction = direction_str{get(hdir, 'Value')};
+
 newheight = getappdata(hfig, 'newheight');
 newheight = str2double(get(newheight, 'String'));
 num_seams_h = img_h - newheight;
@@ -112,44 +118,70 @@ newidth = getappdata(hfig, 'newidth');
 newidth = str2double(get(newidth, 'String'));
 num_seams_w = img_w - newidth;
 
+hguardar = getappdata(hfig, 'guardar');
+guardar = hguardar.Value;
+
 if((newheight == 0 || newidth == 0) || (newheight == img_h && newidth == img_w) || (newheight > img_h || newidth > img_w))
 %Solo podemos redimensionar si se han indicado medidas validas
 
     msgbox('Las nuevas medidas deben ser mayor que 0 y al menos una menor que las originales','Error');
 
 else
+    if strcmpi(direction, 'horizontal')
+        flagdir = 1;
+        direction2 = 'vertical';
+        num_seams_1=num_seams_h;
+        num_seams_2=num_seams_w;
+        stringvetas1='Vetas horizontales superpuestas';
+        stringvetas2='Vetas verticales superpuestas';
+    else
+        flagdir = 0;
+        direction2 = 'horizontal';
+        num_seams_1=num_seams_w;
+        num_seams_2=num_seams_h;
+        stringvetas2='Vetas horizontales superpuestas';
+        stringvetas1='Vetas verticales superpuestas';
+    end
     
-[img_media, seamsh, mask_delete, mask_protect] = seam_carving(img, 'Horizontal', num_seams_h, ...
-    cost_method, mask_delete, mask_protect);
+    
+    [img_media, seams1, mask_delete, mask_protect] = seam_carving(img, direction, num_seams_1, ...
+        cost_method, mask_delete, mask_protect);
+    
+    if (flagdir)
+        mask_protect = mask_protect';
+        mask_delete = mask_delete';
+        mask_delete(:) = 0;
+    else
+        
+        mask_delete(:)=0;
+    end
 
-mask_delete = mask_delete';
-mask_protect = mask_protect';
+    % Elimina las costuras
+    [img_carve, seams2, ~, ~] = seam_carving(img_media, direction2, num_seams_2, ...
+        cost_method, mask_delete, mask_protect);
 
-% Elimina las costuras
-[img_carve, seamsv, ~, ~] = seam_carving(img_media, 'Vertical', num_seams_w, ...
-    cost_method, mask_delete, mask_protect);
+     img_seams1 = draw_seams(img, seams1, direction);
+     img_seams2 = draw_seams(img_media, seams2, direction2);
+     
+    if (guardar)
+        imwrite(img_carve, 'carved.png')
+    end
 
- img_seamsh = draw_seams(img, seamsh, 'Horizontal');
- img_seamsv = draw_seams(img_media, seamsv, 'Vertical');
-
-figure;
-imagesc(img_carve);
-axis image off;
-title('Imagen reducida');
-
-
-figure;
-imagesc(img_seamsh);
-axis image off;
-title('Vetas horizontales superpuestas');
-
-figure;
-imagesc(img_seamsv);
-axis image off;
-title('Vetas verticales superpuestas');
+    figure;
+    imagesc(img_carve);
+    axis image off;
+    title('Imagen reducida');
 
 
+    figure;
+    imagesc(img_seams1);
+    axis image off;
+    title(stringvetas1);
 
+    figure;
+    imagesc(img_seams2);
+    axis image off;
+    title(stringvetas2);
 
 end
 end
@@ -172,7 +204,6 @@ redraw_image(hfig);
 
 end
 
-
 function clear_mask(hobj, ~, mask_name)
 
 hfig = ancestor(hobj, 'figure');
@@ -185,7 +216,6 @@ setappdata(hfig, mask_name, mask);
 redraw_image(hfig);
 
 end
-
 
 function carve(hobj, ~)
 % Funcion encargada de la eliminacion de vetas
@@ -207,6 +237,10 @@ direction = direction_str{get(hdir, 'Value')};
 hseams = getappdata(hfig, 'hseams');
 num_seams = str2double(get(hseams, 'String'));
 
+hguardar = getappdata(hfig, 'guardar');
+guardar = hguardar.Value;
+
+
 if ( ~any(mask_delete(:)) && num_seams < 1  )
 
     msgbox('Para reducir la imagen, es necesario indicar cuantas vetas extraer y/o establecer una mascara de eliminacion.','Error');
@@ -215,6 +249,11 @@ else
     [img_carve, seams, ~, ~] = seam_carving(img, direction, num_seams, ...
         cost_method, mask_delete, mask_protect);
 
+    
+    if (guardar)
+        imwrite(img_carve, 'carved.png')
+    end
+    
     figure;
     imagesc(img_carve);
     axis image off;
@@ -231,7 +270,6 @@ else
 end
 end
 
-
 function redraw_image(hfig)
 
 img = getappdata(hfig, 'img');
@@ -245,12 +283,6 @@ img = draw_mask(img, mask_protect, [0 0 1], 0.5);
 
 % Muestra la imagen por pantalla
 imagesc(img, 'parent', haxes);
-
-end
-
-function reset (~, hfig)
-    redraw_image(hfig);
-
 
 end
 
@@ -279,7 +311,6 @@ control = uicontrol(...
 	'Callback', callback);
 
 end
-
 
 function mask_img = draw_mask(img, mask, color, alpha)
 
