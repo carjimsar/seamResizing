@@ -1,6 +1,8 @@
 function seam_carving_gui()
 
-[archivo,ruta] = uigetfile('*.jpg');
+[archivo,ruta] = uigetfile(...    
+    {'*.jpg; *.JPG; *.jpeg; *.JPEG; *.img; *.IMG; *.tif; *.TIF; *.tiff; *.TIFF; *.png; *.PNG','Supported Files'},...    
+    'MultiSelect', 'on');
 
 img = double(imread(strcat(ruta,archivo))) / 255;
 [img_h, img_w, ~] = size(img);
@@ -33,14 +35,14 @@ create_ui_control('text', [7 0 0.4], 'Coste');
 hcost = create_ui_control('popupmenu', [7 0.4 0.6], ...
 	{'Standard', 'Forward'});
 
-create_ui_control('text', [8 0 0.4], 'Direction:');
+create_ui_control('text', [8 0 0.4], 'Direccion:');
 hdir = create_ui_control('popupmenu', [8 0.4 0.6], ...
 	{'Vertical', 'Horizontal'});
 
-create_ui_control('text', [9 0 0.4], 'Seams:');
+create_ui_control('text', [9 0 0.4], 'Vetas:');
 hseams = create_ui_control('edit', [9 0.4 0.6], 0);
 
-create_ui_control('pushbutton', 10, 'Carve', @carve);
+create_ui_control('pushbutton', 10, 'Extraer', @carve);
 
 create_ui_control('text', [11 0 0.4], 'Alto:');
 newheight = create_ui_control('edit', [11 0.4 0.6], 0);
@@ -133,18 +135,18 @@ mask_protect = mask_protect';
 figure;
 imagesc(img_carve);
 axis image off;
-title('Carved image');
+title('Imagen reducida');
 
 
 figure;
 imagesc(img_seamsh);
 axis image off;
-title('Horizontal seams projected to the original image');
+title('Vetas horizontales superpuestas');
 
 figure;
 imagesc(img_seamsv);
 axis image off;
-title('Vertical seams projected to the original image');
+title('Vetas verticales superpuestas');
 
 
 
@@ -216,7 +218,7 @@ else
     figure;
     imagesc(img_carve);
     axis image off;
-    title('Carved image');
+    title('Imagen reducida');
 
     % Funcion encargada de la superposicion de las vetas
     img_seams = draw_seams(img, seams, direction);
@@ -224,7 +226,7 @@ else
     figure;
     imagesc(img_seams);
     axis image off;
-    title('Seams projected to the original image');
+    title('Vetas superpuestas');
     
 end
 end
@@ -246,6 +248,11 @@ imagesc(img, 'parent', haxes);
 
 end
 
+function reset (~, hfig)
+    redraw_image(hfig);
+
+
+end
 
 function control = create_ui_control(style, pos, text, callback)
 
