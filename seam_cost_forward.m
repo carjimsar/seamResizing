@@ -27,7 +27,6 @@ for i=2:M
           topleft_cost(i,j)=abs(I(i,j+1)-I(i,j-1))+abs(I(i-1,j)-I(i,j-1));
           top_cost(i,j)=abs(I(i,j+1)-I(i,j-1));
           topright_cost(i,j)=abs(I(i,j+1)-I(i,j-1))+abs(I(i-1,j)-I(i,j+1));
-
         end
     end
 end

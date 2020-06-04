@@ -128,12 +128,14 @@ if((newheight == 0 || newidth == 0) || (newheight == img_h && newidth == img_w) 
 
 else
     if strcmpi(direction, 'horizontal')
+        flagdir = 1;
         direction2 = 'vertical';
         num_seams_1=num_seams_h;
         num_seams_2=num_seams_w;
         stringvetas1='Vetas horizontales superpuestas';
         stringvetas2='Vetas verticales superpuestas';
     else
+        flagdir = 0;
         direction2 = 'horizontal';
         num_seams_1=num_seams_w;
         num_seams_2=num_seams_h;
@@ -145,8 +147,14 @@ else
     [img_media, seams1, mask_delete, mask_protect] = seam_carving(img, direction, num_seams_1, ...
         cost_method, mask_delete, mask_protect);
     
-    mask_protect = mask_protect';
-    mask_delete = mask_delete';
+    if (flagdir)
+        mask_protect = mask_protect';
+        mask_delete = mask_delete';
+        mask_delete(:) = 0;
+    else
+        
+        mask_delete(:)=0;
+    end
 
     % Elimina las costuras
     [img_carve, seams2, ~, ~] = seam_carving(img_media, direction2, num_seams_2, ...

@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration file="C:\Users\cajiessa\Documents\repos\seamResizing\SeamDownsizing.prj" location="C:\Users\cajiessa\Documents\repos\seamResizing" name="SeamDownsizing" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration file="C:\Users\cajiessa\Documents\repos\seamResizing\SeamDownsizing.prj" location="C:\Users\cajiessa\Documents\repos\seamResizing" name="SeamDownsizing" preferred-package-location="C:\Users\cajiessa\Documents\repos\seamResizing\SeamDownsizing\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>SeamDownsizing</param.appname>
     <param.icon />
     <param.icons />
@@ -10,7 +10,7 @@
     <param.summary>Esta aplicación sólo tiene fines didácticos.</param.summary>
     <param.description>Con esta aplicación, se reducen las dimensiones de una imagen.
 Esta reducción se puede hacer con dos fines; eliminar algún elemento u obtener la misma foto con unas medidas menores. Ambas opciones admiten proteger elementos para que no sean modificados.</param.description>
-    <param.screenshot>C:\Users\cajiessa\Desktop\splash.png</param.screenshot>
+    <param.screenshot>C:\Users\cajiessa\Desktop\for_redistribution_files_only\splash.png</param.screenshot>
     <param.guid />
     <param.installpath.string>\SeamDownsizing\</param.installpath.string>
     <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
@@ -25,10 +25,10 @@ Esta reducción se puede hacer con dos fines; eliminar algún elemento u obtener
     <param.user.defined.mcr.options />
     <param.target.type>subtarget.standalone</param.target.type>
     <param.support.packages />
-    <param.web.mcr>false</param.web.mcr>
-    <param.package.mcr>true</param.package.mcr>
+    <param.web.mcr>true</param.web.mcr>
+    <param.package.mcr>false</param.package.mcr>
     <param.no.mcr>false</param.no.mcr>
-    <param.web.mcr.name>MyAppInstaller_web</param.web.mcr.name>
+    <param.web.mcr.name>SeamDownsizing_web</param.web.mcr.name>
     <param.package.mcr.name>SeamDownsizingInstaller</param.package.mcr.name>
     <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
     <param.windows.command.prompt>true</param.windows.command.prompt>
@@ -42,10 +42,7 @@ Esta reducción se puede hacer con dos fines; eliminar algún elemento u obtener
 	 
  Input Arguments 
 	 -?  print help on how to use the application 
-	 input arguments 
- Description 
- 	 Con esta aplicación, se reducen las dimensiones de una imagen.
-Esta reducción se puede hacer con dos fines; eliminar algún elemento u obtener la misma foto con unas medidas menores. Ambas opciones admiten proteger elementos para que no sean modificados.</param.help.text>
+	 input arguments</param.help.text>
     <unset>
       <param.icon />
       <param.icons />
@@ -63,8 +60,9 @@ Esta reducción se puede hacer con dos fines; eliminar algún elemento u obtener
       <param.user.defined.mcr.options />
       <param.target.type />
       <param.support.packages />
+      <param.web.mcr />
+      <param.package.mcr />
       <param.no.mcr />
-      <param.web.mcr.name />
       <param.no.mcr.name />
       <param.windows.command.prompt />
       <param.create.log />
